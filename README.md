@@ -1,5 +1,5 @@
 > [!NOTE]  
-> Era is still very very early in development, this documentation may be missing information, specifically within data types.
+> Era is still very very early in development, this documentation may be missing information, especially within data types.
 
 # Era
 A new interpreted programming language!
@@ -35,20 +35,39 @@ Era's current implementation is a basic interpreter being written in Rust. Futur
 ### int
 The integer type, representing whole numbers, both positive and negative. Supports basic arithmetic operations and comparisons.
 
+> [!NOTE]  
+> Missing information.
+
 ### big_int
 The theoretically infinitely large integer type, representing whole numbers as large as your computer can handle, positive and negative. Supports basic arithmetic operations and comparisons. A `big_int` can be created by putting an `n` at the end of an integer literal, using `new big_int()`, or by casting an integer.
+
+> [!NOTE]  
+> Missing information.
 
 ### float
 The floating-point type, used for representing numbers with fractional parts. Supports arithmetic operations, rounding, and comparisons.
 
+> [!NOTE]  
+> Missing information.
+
 ### double
 The double-precision floating-point type, similar to `float`, but with more precision and a larger range of values. Despite this, float is usually more prefered.
 
+> [!NOTE]  
+> Missing information.
+
 ### bool
+The binary true or false data type, create using one of those two keywords.
+
+> [!NOTE]  
+> Missing information.
 
 ### string
 The immutable string of characters. Represents text and can be defined in various ways.
 Triple quotes for multiline, `f` for format, and `r` for raw.
+
+> [!NOTE]  
+> Missing information.
 
 #### Creation
 - **Single Quotes**: Represents a regular string.
@@ -145,28 +164,52 @@ Triple quotes for multiline, `f` for format, and `r` for raw.
 ### array
 An ordered collection of elements, which can be of any type. Arrays are resizable and allow indexing, iteration, and manipulation of their elements.
 
+> [!NOTE]  
+> Missing information.
+
 #### static functions
 - `.range(from: int, to: int)` returns an array containing `from` to `to` inclusive.
 
 ### dictionary
 An unordered collection of key-value pairs, where each key is unique. Allows fast lookups, additions, and removals of elements based on their keys.
 
+> [!NOTE]  
+> Missing information.
+
 ### function
 Represents a function, which can be defined and invoked within the program. Functions can have parameters, return values, and can be assigned to variables.
 
+> [!NOTE]  
+> Missing information.
+
 ### class
+
+> [!NOTE]  
+> Missing information.
 
 ### event
 Represents an event, which can be triggered or emitted to notify subscribers. Events are commonly used for handling changes in state or responding to user actions.
 
+> [!NOTE]  
+> Missing information.
+
 ### enum
+
+> [!NOTE]  
+> Missing information.
 
 ### type
 Represents a type, typically used for type checking or introspection. Allows determining the type of a value or variable at runtime. This type exists as the basic built in types are not classes but the "type" type can be both a built in type or a class.
 
+> [!NOTE]  
+> Missing information.
+
 ### error
 Represents an error, typically thrown when an operation cannot complete as expected. Can contain an error message or additional details to describe the issue.
 Errors will typically contain a basic error description, an error code, a stack trace, and other useful information about the error.
+
+> [!NOTE]  
+> Missing information.
 
 ## properties
 
@@ -177,16 +220,31 @@ Errors will typically contain a basic error description, an error code, a stack 
 ### null
 Represents a null or absent value. Used to indicate that a variable or object has no valid data or reference.
 
+> [!NOTE]  
+> Missing information.
+
 ### nullable
 Represents a type that can either have a value of a specific type or be `null`. A nullable type can hold any valid value or `null` to indicate the absence of data.
+
+> [!NOTE]  
+> Missing information.
 
 ### immutable
 Represents a type that cannot be changed after creation. Immutable types ensure that the value remains constant throughout the program. When used with an array or dictionary, this also ensures the contents of the array or dictionary cannot be modified.
 
+> [!NOTE]  
+> Missing information.
+
 ### future
+
+> [!NOTE]  
+> Missing information.
 
 ### void
 Represents the absence of a value or return type. Used in functions to indicate that no value is returned, typically for procedures or operations that don’t need to provide a result.
+
+> [!NOTE]  
+> Missing information.
 
 ## Annotations:
 All annotations in Era have paramaters to avoid creating glorified keywords. Annotations only modify, and thus do not return anything.
@@ -385,13 +443,28 @@ Era requires semicolons much like Java.
 Era provides several built-in modules, these are opt-in so that developers imbedding Era into projects made remove these as needed.
 ### math
 
+> [!NOTE]  
+> Missing information.
+
 ### time
+
+> [!NOTE]  
+> Missing information.
 
 ### output
 
+> [!NOTE]  
+> Missing information.
+
 ### input
 
+> [!NOTE]  
+> Missing information.
+
 ### random
+
+> [!NOTE]  
+> Missing information.
 
 # Future Directions
 
