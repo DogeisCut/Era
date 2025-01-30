@@ -1,3 +1,6 @@
+> [!NOTE]  
+> Era is still very very early in development, this documentation may be missing information, specifically within data types.
+
 # Era
 A new interpreted programming language!
 
