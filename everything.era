@@ -1,0 +1,226 @@
+import math from "!math";
+import time from "!time";
+import output from "!output";
+import random from "!random";
+import my_external_int, my_external_class from "external_files";
+import * as utils from "my_utils";
+
+let number: int = 1;
+const const_number: int = 1;
+
+let my_array: array<int> = [1,2,3,4]; // Arrays are resizable!
+my_array[0]; // Era arrays start at 0!
+let my_dictionary: dictionary<string,int> = {
+    "bob" = 1,
+    "john" = 2
+};
+
+output.print(math.cos(time.get_computer_time_milliseconds()));
+
+my_array.push(7);
+array.push(my_array, 10);
+my_dictionary["sunny"] = 18;
+
+func my_function(argument_one: number) -> void {
+    number += argument_one;
+}
+
+class square {
+    let size: float;
+    event size_changed(old_size: float, new_size: float);
+    func double_size() -> void {
+        size_changed(size, size*2); // size_changed is an event, not a function. The syntax for emitting events is the same however.
+        size *= 2;
+    }
+    @operator("+") // Overloads a + b, this annotation also allows custom operators. This is only acceptable from within classes.
+    func plus(b: square) -> square { 
+        return new square(size + b.size);
+    }
+    func get_size() -> float {
+        return size;
+    }
+    func to_string() -> string { // used internally by the output.print() too.
+        return "square: " + size.to_string();
+    }
+    static func do_something() -> void {
+
+    }
+    constructor(size: float) {
+        self.size = size;
+    }
+}
+
+let my_square: square = new square(3);
+
+func print_debug() {
+    output.print("Size changed!");
+}
+
+print_debug.subscribe(my_square.size_changed);
+// my_square.size_changed.connect(print_debug); also works!
+
+let functions_are_objects_too: function = func() -> void { output.print("hello!"); };
+let classes_are_objects_too: class = class { constructor() {} };
+let events_are_objects_too: event = my_square.size_changed;
+
+// Functions can also be called with .call(); and bind arguments before calling with .bind(type, value);
+// Events can also be emitted with .emit(); and binded in the same way.
+
+output.print("string " + "concatenation");
+
+let immutable_strings: string = "my favorite string";
+let new_string: string = immutable_strings + " has made a new string!";
+
+const list: immutable<array<int>> = [1, 2, 3];
+const nested_list: array<immutable<array<int>>> = [[1, 2, 3].to_immutable(), [1, 8, 7].to_immutable()];
+
+func function_in_function(the_function: function<[int], int>, argument_one: int) -> int { // this just to show off binding and calling. You would just call this func normally.
+    return (the_function.bind(int, argument_one))(); 
+}
+
+function_in_function(func(a: int) -> int { return a * 5 }, 2)  // returns 10
+
+(func() {
+    let scope: string = "My scope!"
+})()
+
+(typeof 6); // int
+(typeof "hello"); // string
+(typeof int); // type
+(typeof square); // class
+(typeof null); // null
+
+class rectangle extends square {
+    let width: float
+    constructor(size: float, width: float) {
+        self.width = width;
+        super(size);
+    }
+}
+
+enum square_properties {
+    none = 0,
+    pushable = 2,
+    squishable = 4,
+    consumable = 8
+}
+
+func nullable_func() -> nullable<int> {
+    return random.random_bool() ? null : random.random_int_range(0,100); // Ternary!
+}
+
+("Hello" === "hello"); // false
+("Hello" == "hello"); // true
+("hello" ?= "hello"); // false, ?= checks specifically for reference equality.
+
+if (nullable_func() is null) {
+    output.print("We gotta null!")
+}
+
+([]); // truthy
+({}); // truthy
+(""); // truthy
+(0); // falsy
+(1); // truthy
+(null); // falsy
+
+for (let index: int in array.range(0, 100)) {
+    output.print(index);
+}
+
+while (false) {
+    // wont run
+}
+
+let my_type: type = string
+// this also works!
+//let my_type: typeof string = string 
+
+switch (my_type) {
+    case string:
+        output.print("String Found!");
+        break;
+    case int:
+        output.print("Ew! An int!");
+        break;
+    default:
+        output.print("I dunno, " + my_type.to_string());
+}
+
+if (true) {
+    // ...
+} elseif (true) {
+    // ...
+} else {
+    // ...
+}
+
+// Era supports standard operators, + - / *, Era uses ** for power as Era also supports various bitwise operations, <<, >>, ^, ~, &, |
+// Era also has boolean operators, such as ||, &&, <, > <= >=, !=, !, ==, ===, !==
+// Era even supports "or", "and", and "not".
+// Era also has % modulus, // and quotient.
+// Era supports the assignment operator versions of these too, =, +=, -=. *=, %=.
+// Era supports Unary positive, Unary negative too, +x, -x.
+// Era supports identity operators, is, is not.
+// Era supports membership operators, in, not in.
+// Era supports ++, and --
+// Era also of course has the reference operators, ?= and !?=
+
+// Era fully supports function overloading and overriding. Overloading performs type-checking and bad overloading will give errors.
+
+/*
+Multiline Comments!
+*/
+
+let my_multiline_string: string = """
+Multiline
+
+String!\n\n\t
+""";
+let my_raw_string: string = r"/t/h/i/s /s/t/r/i/n/g /i/s/r/a/w";
+let my_format_string: string f"${my_raw_string} is a cool string";
+
+let useless: int = 47;
+useless++;
+useless++;
+delete useless;
+
+let hex: int = 0x100;
+
+import risky_operation from "risky_api";
+
+let simple_cast: float = number as float; 
+
+let squares = [x * x for let x: int in array.range(0, 10)];
+let names_to_lengths = {name = name.length() for let name: string in ["bob", "john"]};
+
+try {
+    let result = risky_operation();
+} catch (caught_error: error) {
+    output.print_error("Error occurred: " + caught_error.to_string());
+}
+
+// alternatively:
+
+try {
+    let result = risky_operation();
+} catch (caught_error: error) {
+    throw error;
+}
+
+throw new error("bad code");
+
+async func asyncables() {
+    await square.size_changed; // Await will wait until an event is emitted.
+    yield true; // yield will simply wait until a value is true.
+    await time.timer(new time.seconds(10));
+}
+
+func infinite_arguments(my_strings: string..., afterwards: int) { // Infinite arguments can have after them so long as the types do not match.
+  for (let argument: string in my_strings) {
+    output.print(argument);
+  }
+  output.print(afterwards);
+}
+
+export my_raw_string, my_format_string;

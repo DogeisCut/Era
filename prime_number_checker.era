@@ -1,0 +1,13 @@
+func is_prime(n: int) -> bool {
+    if (n <= 1) {
+        return false;
+    }
+    for (let i: int in array.range(2, (n**0.5) as int)) {
+        if (n % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+output.print(is_prime(11));  // Output: true

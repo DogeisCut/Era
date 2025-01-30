@@ -1,0 +1,43 @@
+{
+	"name": "era-syntax",
+	"displayName": "Era Syntax Highlighting",
+	"description": "Provides syntax highlighting for Era language files",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.63.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "era",
+				"aliases": [
+					"Era"
+				],
+				"extensions": [
+					".era"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "era",
+				"scopeName": "source.era",
+				"path": "./era.tmLanguage.json"
+			},
+			{
+				"scopeName": "text.html.markdown.literal.era",
+				"path": "./era.tmLanguage.json",
+				"injectTo": [
+					"text.html.markdown"
+				],
+				"embeddedLanguages": {
+					"source.era": "era"
+				}
+			}
+		]
+	}
+   }
