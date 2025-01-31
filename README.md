@@ -182,6 +182,10 @@ Represents a function, which can be defined and invoked within the program. Func
 > [!NOTE]  
 > Missing information.
 
+## properties
+
+- `return_type -> type` contains the type that this function returns.
+
 ### class
 
 > [!NOTE]  
@@ -243,8 +247,7 @@ Represents a type that cannot be changed after creation. Immutable types ensure 
 ### void
 Represents the absence of a value or return type. Used in functions to indicate that no value is returned, typically for procedures or operations that don’t need to provide a result.
 
-> [!NOTE]  
-> Missing information.
+Because of this, void is only to be used as the return value of functions, and nowhere else.
 
 ## Annotations:
 All annotations in Era have paramaters to avoid creating glorified keywords. Annotations only modify, and thus do not return anything.
@@ -742,4 +745,70 @@ func is_prime(n: int) -> bool {
 
 output.print(is_prime(11));  // Output: true
 ```
+## Simple Calculator
+```era
+func calculator(a: int, b: int, op: string) -> int {
+    switch (op) {
+        case "+":
+            return a + b;
+        case "-":
+            return a - b;
+        case "*":
+            return a * b;
+        case "/":
+            return a / b;
+        default:
+            throw new error("Invalid operator");
+    }
+}
 
+output.print(calculator(5, 3, "+"));  // Output: 8
+```
+## Factorial with Recursion
+```era
+func factorial(n: int) -> int {
+    return n <= 1 ? 1 : n * factorial(n - 1);
+}
+
+output.print(factorial(5));  // Output: 120
+```
+## Event-Driven Counter
+```era
+class counter {
+    let value: int;
+    event on_change(old: int, new: int);
+
+    func increment() -> void {
+        let old_value = value;
+        value++;
+        on_change(old_value, value);
+    }
+
+    constructor(start: int) {
+        self.value = start;
+    }
+}
+
+let my_counter = new counter(0);
+
+func display_change(old: int, new: int) {
+    output.print("Counter changed from ${old} to ${new}");
+}
+
+display_change.subscribe(my_counter.on_change);
+
+my_counter.increment();  // Output: Counter changed from 0 to 1
+my_counter.increment();  // Output: Counter changed from 1 to 2
+```
+## Asynchronous Timer
+```era
+async func countdown(seconds: int) {
+    for (let i: int in array.range(seconds, 0)) {
+        output.print(i);
+        await time.timer(new time.seconds(1));
+    }
+    output.print("Time's up!");
+}
+
+countdown(5);  // Counts down from 5 to 0
+```
