@@ -94,44 +94,44 @@ const TokenType = {
     EOF: "EOF",
 };
 
-const Keywords = {
-    LET: TokenType.LET,
-    CONST: TokenType.CONST,
-    FUNC: TokenType.FUNC,
-    CLASS: TokenType.CLASS,
-    EXTENDS: TokenType.EXTENDS,
-    NEW: TokenType.NEW,
-    RETURN: TokenType.RETURN,
-    IF: TokenType.IF,
-    ELSEIF: TokenType.ELSEIF,
-    ELSE: TokenType.ELSE,
-    FOR: TokenType.FOR,
-    WHILE: TokenType.WHILE,
-    SWITCH: TokenType.SWITCH,
-    CASE: TokenType.CASE,
-    BREAK: TokenType.BREAK,
-    DEFAULT: TokenType.DEFAULT,
-    IMPORT: TokenType.IMPORT,
-    EXPORT: TokenType.EXPORT,
-    EVENT: TokenType.EVENT,
-    ENUM: TokenType.ENUM,
-    TRY: TokenType.TRY,
-    CATCH: TokenType.CATCH,
-    THROW: TokenType.THROW,
-    ASYNC: TokenType.ASYNC,
-    AWAIT: TokenType.AWAIT,
-    YIELD: TokenType.YIELD,
-    DELETE: TokenType.DELETE,
-    STATIC: TokenType.STATIC,
-    CONSTRUCTOR: TokenType.CONSTRUCTOR,
-    IS: TokenType.IS,
-    IS_NOT: TokenType.IS_NOT,
-    IN: TokenType.IN,
-    NOT_IN: TokenType.NOT_IN,
-    AND: TokenType.AND,
-    OR: TokenType.OR,
-    NOT: TokenType.NOT,
-};
+const Keywords = [
+    TokenType.LET,
+    TokenType.CONST,
+    TokenType.FUNC,
+    TokenType.CLASS,
+    TokenType.EXTENDS,
+    TokenType.NEW,
+    TokenType.RETURN,
+    TokenType.IF,
+    TokenType.ELSEIF,
+    TokenType.ELSE,
+    TokenType.FOR,
+    TokenType.WHILE,
+    TokenType.SWITCH,
+    TokenType.CASE,
+    TokenType.BREAK,
+    TokenType.DEFAULT,
+    TokenType.IMPORT,
+    TokenType.EXPORT,
+    TokenType.EVENT,
+    TokenType.ENUM,
+    TokenType.TRY,
+    TokenType.CATCH,
+    TokenType.THROW,
+    TokenType.ASYNC,
+    TokenType.AWAIT,
+    TokenType.YIELD,
+    TokenType.DELETE,
+    TokenType.STATIC,
+    TokenType.CONSTRUCTOR,
+    TokenType.IS,
+    TokenType.IS_NOT,
+    TokenType.IN,
+    TokenType.NOT_IN,
+    TokenType.AND,
+    TokenType.OR,
+    TokenType.NOT,
+];
 
 class Token {
     constructor(type, lexeme, literal, line) {
@@ -314,16 +314,71 @@ class Lexer {
     }
 
     number() {
-        while (this.isDigit(this.peek())) this.advance();
+        if (this.peek() === '0' && (this.peekNext() === 'x' || this.peekNext() === 'X')) {
+            // Hexadecimal number
+            this.advance(); // Consume '0'
+            this.advance(); // Consume 'x' or 'X'
+            while (this.isHexDigit(this.peek())) {
+                this.advance();
+            }
+            const text = this.source.substring(this.start, this.current);
+            const value = parseInt(text, 16);
+            this.addToken(TokenType.NUMBER, value);
+            return;
+        }
+
+        if (this.peek() === '0' && (this.peekNext() === 'b' || this.peekNext() === 'B')) {
+            // Binary number
+            this.advance(); // Consume '0'
+            this.advance(); // Consume 'b' or 'B'
+            while (this.isBinaryDigit(this.peek())) {
+                this.advance();
+            }
+            const text = this.source.substring(this.start, this.current);
+            const value = parseInt(text, 2);
+            this.addToken(TokenType.NUMBER, value);
+            return;
+        }
+
+        while (this.isDigit(this.peek()) || this.peek() === '_') {
+            if (this.peek() === '_') {
+                if (!this.isDigit(this.peekNext())) {
+                    throw new Error(`Unexpected '_' at line ${this.line}`);
+                }
+            }
+            this.advance();
+        }
 
         if (this.peek() === '.' && this.isDigit(this.peekNext())) {
             this.advance(); // Consume the '.'
 
-            while (this.isDigit(this.peek())) this.advance();
+            while (this.isDigit(this.peek()) || this.peek() === '_') {
+                if (this.peek() === '_') {
+                    if (!this.isDigit(this.peekNext())) {
+                        throw new Error(`Unexpected '_' at line ${this.line}`);
+                    }
+                }
+                this.advance();
+            }
         }
 
-        const value = parseFloat(this.source.substring(this.start, this.current));
-        this.addToken(TokenType.NUMBER, value);
+        const text = this.source.substring(this.start, this.current).replace(/_/g, '');
+        if (this.peek() === 'n') {
+            this.advance(); // Consume the 'n' for bigint
+            const value = BigInt(text);
+            this.addToken(TokenType.NUMBER, value);
+        } else {
+            const value = parseFloat(text);
+            this.addToken(TokenType.NUMBER, value);
+        }
+    }
+
+    isHexDigit(char) {
+        return (char >= '0' && char <= '9') || (char >= 'a' && char <= 'f') || (char >= 'A' && char <= 'F');
+    }
+
+    isBinaryDigit(char) {
+        return char === '0' || char === '1';
     }
 
     identifier() {
@@ -336,7 +391,7 @@ class Lexer {
 
     getKeywordType(text) {
         const upperText = text.toUpperCase();
-        return Object.values(Keywords).includes(upperText) ? Keywords[upperText] : null;
+        return Keywords.includes(upperText) ? upperText : null;
     }
 
     isDigit(char) {
@@ -382,6 +437,22 @@ class Parser {
         const initializer = this.expression();
         this.consume(TokenType.SEMICOLON, "Expected ';' after variable decleration.");
         return new LetStatement(name, type, initializer);
+    }
+
+    funcDeclaration() {
+        // Parse a function declaration
+        const name = this.consume(TokenType.IDENTIFIER, "Expected function name.");
+        this.consume(TokenType.LPAREN, "Expected '(' after function name.");
+        const parameters = [];
+        if (!this.check(TokenType.RPAREN)) {
+            do {
+                parameters.push(this.consume(TokenType.IDENTIFIER, "Expected parameter name."));
+            } while (this.match(TokenType.COMMA));
+        }
+        this.consume(TokenType.RPAREN, "Expected ')' after function parameters.");
+        this.consume(TokenType.LBRACE, "Expected '{' before function body.");
+        const body = this.block();
+        return new FunctionDeclaration(name, parameters, body);
     }
 
     expression() {
@@ -573,5 +644,11 @@ class ExpressionStatement extends ASTNode {
     constructor(expression) {
         super("ExpressionStatement");
         this.expression = expression; // The expression being evaluated
+    }
+}
+
+class Evaluator {
+    constructor() {
+        this.environment = new Map(); // Store variables in a map
     }
 }
