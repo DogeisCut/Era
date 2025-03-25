@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Era Interpreter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Era Interpreter</h1>
+    <textarea id="eraCode" placeholder="Write your Era code here..."></textarea>
+    <br>
+    <button onclick="runEraCode()">Run</button>
+    <h2>Lexer Output:</h2>
+    <pre id="output"></pre>
+    <h2>Parser Output:</h2>
+    <pre id="parserOutput"></pre>
+
+    <script src="era.js"></script>
+    <script>
+        // Autofill the textarea with example Era code on page load
+        window.onload = function() {
+            const exampleCode = `
+func factorial(n: int) -> int {
+    return n <= 1 ? 1 : n * factorial(n - 1);
+}
+
+output.print(factorial(5));  // Output: 120
+`;
+            document.getElementById('eraCode').value = exampleCode.trim();
+        };
+
+        function runEraCode() {
+            const code = document.getElementById('eraCode').value;
+            const outputElement = document.getElementById('output');
+            const parserOutputElement = document.getElementById('parserOutput');
+
+            try {
+                // Use the Lexer class to tokenize the code
+                const lexer = new Lexer(code);
+                const tokens = lexer.tokenize();
+
+                // Format the tokens into a human-readable string
+                const lexerResult = tokens.map(token => 
+                    `Type: ${token.type}, Lexeme: "${token.lexeme}", Literal: ${token.literal}, Line: ${token.line}`
+                ).join('\n');
+
+                outputElement.textContent = lexerResult;
+
+                try {
+                    // Use the Parser class to parse the tokens
+                    const parser = new Parser(tokens);
+                    const ast = parser.parse();
+
+                    // Format the AST into a human-readable string
+                    const parserResult = JSON.stringify(ast, null, 2);
+                    parserOutputElement.textContent = parserResult;
+                } catch (parserError) {
+                    parserOutputElement.textContent = `Parser Error: ${parserError.message}`;
+                }
+            } catch (lexerError) {
+                outputElement.textContent = `Lexer Error: ${lexerError.message}`;
+                parserOutputElement.textContent = 'Parser output cleared due to lexer error.';
+            }
+        }
+    </script>
+</body>
+</html>

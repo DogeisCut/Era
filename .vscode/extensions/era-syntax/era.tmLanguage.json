@@ -42,29 +42,39 @@
 	],
 	"repository": {
 		"comments": {
-			"name": "comment.block.era",
-			"begin": "/\\*",
-			"end": "\\*/",
-             "patterns": [
+            "patterns": [
                 {
                     "name": "comment.line.era",
                     "match": "//.*$"
-                 }
+                },
+                {
+                    "name": "comment.block.era",
+                    "begin": "/\\*",
+                    "end": "\\*/"
+                }
             ]
-		},
+        },
 		"keywords": {
 			"patterns": [
 				{
-					"name": "keyword.control.era",
-					"match": "\\b(if|else|elseif|for|while|switch|case|break|default|in|try|catch|throw|async|await|yield|continue|return)\\b"
-				},
+                    "name": "keyword.control.era",
+                    "match": "\\b(if|else|elseif|for|while|switch|case|break|default|in|try|catch|throw|async|await|yield|continue|return)\\b"
+                },
                 {
                     "name": "keyword.declaration.era",
-                    "match": "\\b(let|const|func|class|enum|event|import|export|new)\\b"
+                    "match": "\\b(let|const|func|class|enum|event|import|export|new|delete)\\b"
                 },
-                 {
+                {
+                    "name": "keyword.declaration.import.alias.era",
+                    "match": "\\b(as)\\b(?=\\s+\\w+\\s+from)"
+                },
+                {
                     "name": "keyword.operator.era",
                     "match": "\\b(is|not|or|and|in)\\b"
+                },
+                {
+                    "name": "keyword.operator.cast.era",
+                    "match": "\\b(as)\\b(?=\\s+\\w+)"
                 },
                 {
                     "name": "constant.language.boolean.era",
@@ -124,22 +134,25 @@
 				{
 					"name": "keyword.operator.increment_decrement.era",
 					"match": "(\\+\\+|--)"
-				}
-
+				},
+                {
+                    "name": "keyword.operator.cast.era",
+                    "match": "\\b(as)\\b(?=\\s+\\w+)" 
+                }
             ]
         },
 		"variables": {
 			"patterns": [
 				{
 					"name": "variable.other.readwrite.era",
-					"match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+					"match": "\\b(?!int|float|double|bool|string|array|dictionary|function|class|event|enum|type|error|null|nullable|immutable|void|big_int)[a-zA-Z_][a-zA-Z0-9_]*\\b"
 				}
 			]
 		},
          "types": {
             "patterns": [
                 {
-                    "name": "storage.type.era",
+                    "name": "entity.name.type.era",
 					"match": "\\b(int|float|double|bool|string|array|dictionary|function|class|event|enum|type|error|null|nullable|immutable|void|big_int)\\b"
                 }
             ]
