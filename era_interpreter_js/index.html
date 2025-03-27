@@ -57,7 +57,7 @@ output.print(factorial(5));  // Output: 120
 
             try {
                 // Use the Lexer class to tokenize the code
-                const lexer = new Lexer(code);
+                const lexer = new Era.Lexer(code);
                 const tokens = lexer.tokenize();
 
                 // Format the tokens into a human-readable string
@@ -69,7 +69,7 @@ output.print(factorial(5));  // Output: 120
 
                 try {
                     // Use the Parser class to parse the tokens
-                    const parser = new Parser(tokens);
+                    const parser = new Era.Parser(tokens);
                     const ast = parser.parse();
 
                     // Format the AST into a human-readable string
