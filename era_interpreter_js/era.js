@@ -216,6 +216,14 @@ const Era = (function () {
                     if (this.match('/')) {
                         // Handle comments
                         while (this.peek() !== '\n' && !this.isAtEnd()) this.advance();
+                    } else if (this.match('*')) {
+                        // Handle block comments
+                        while (!(this.peek() === '*' && this.peekNext() === '/') && !this.isAtEnd()) {
+                            if (this.peek() === '\n') this.line++;
+                            this.advance();
+                        }
+                        this.advance(); // Consume the closing '*'
+                        this.advance(); // Consume the closing '/'
                     } else {
                         this.addToken(TokenType.SLASH);
                     }
