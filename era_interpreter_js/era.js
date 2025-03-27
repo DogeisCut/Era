@@ -426,6 +426,12 @@ class Parser {
         if (this.match(TokenType.LET)) {
             return this.letDeclaration();
         }
+        if (this.match(TokenType.FUNC)) {
+            return this.funcDeclaration();
+        }
+        if (this.match(TokenType.RETURN)) {
+            return this.returnStatement();
+        }
         return this.expressionStatement();
     }
 
@@ -444,20 +450,60 @@ class Parser {
         const name = this.consume(TokenType.IDENTIFIER, "Expected function name.");
         this.consume(TokenType.LPAREN, "Expected '(' after function name.");
         const parameters = [];
+        const parameterTypes = [];
         if (!this.check(TokenType.RPAREN)) {
             do {
                 parameters.push(this.consume(TokenType.IDENTIFIER, "Expected parameter name."));
+                this.consume(TokenType.COLON, "Expected ':' after parameter name.");
+                parameterTypes.push(this.consume(TokenType.IDENTIFIER, "Expected parameter type after colon."));
             } while (this.match(TokenType.COMMA));
         }
         this.consume(TokenType.RPAREN, "Expected ')' after function parameters.");
+        this.consume(TokenType.ARROW, "Expected '->' before function body.");
+        const returnType = this.consume(TokenType.IDENTIFIER, "Expected return type after '->'.");
         this.consume(TokenType.LBRACE, "Expected '{' before function body.");
         const body = this.block();
-        return new FunctionDeclaration(name, parameters, body);
+        return new FunctionDeclaration(name, parameters, parameterTypes, returnType, body);
+    }
+
+    returnStatement() {
+        // Parse a return statement
+        const keyword = this.previous();
+        let value = null;
+        if (!this.check(TokenType.SEMICOLON)) {
+            value = this.expression();
+        }
+        this.consume(TokenType.SEMICOLON, "Expected ';' after return value.");
+        return new ReturnStatement(keyword, value);
+    }
+
+    tenary() {
+        const condition = this.equality(); // Parse the condition (delegates to equality or lower precedence)
+        
+        if (this.match(TokenType.QUESTION)) { // Check for '?'
+            const trueExpr = this.expression(); // Parse the true branch
+            this.consume(TokenType.COLON, "Expected ':' after true expression."); // Ensure ':' is present
+            const falseExpr = this.expression(); // Parse the false branch
+            return new TenaryExpression(condition, trueExpr, falseExpr); // Return a TenaryExpression node
+        }
+    
+        return condition; // If no '?' is found, return the condition as-is
+    }
+    
+    block() {
+        const statements = [];
+        while (!this.check(TokenType.RBRACE) && !this.isAtEnd()) {
+            statements.push(this.statement());
+        }
+        this.consume(TokenType.RBRACE, "Expected '}' after block.");
+        return statements;
     }
 
     expression() {
-        // Parse an expression (e.g., binary expressions, literals, etc.)
-        return this.equality();
+        // Process the ternary operator,
+        // if not present, delegate to equality, 
+        // which delegates to comparison, etc.
+        return this.tenary();
     }
 
     expressionStatement() {
@@ -644,6 +690,34 @@ class ExpressionStatement extends ASTNode {
     constructor(expression) {
         super("ExpressionStatement");
         this.expression = expression; // The expression being evaluated
+    }
+}
+
+class FunctionDeclaration extends ASTNode {
+    constructor(name, parameters, parameterTypes, returnType, body) {
+        super("FunctionDeclaration");
+        this.name = name;           // Function name token
+        this.parameters = parameters; // Array of parameter tokens
+        this.parameterTypes = parameterTypes; // Array of parameter type tokens
+        this.returnType = returnType; // Return type token
+        this.body = body;           // Body of the function (a block of statements)
+    }
+}
+
+class ReturnStatement extends ASTNode {
+    constructor(keyword, value) {
+        super("ReturnStatement");
+        this.keyword = keyword; // The 'return' keyword token
+        this.value = value;     // The value to return (an expression)
+    }
+}
+
+class TenaryExpression extends ASTNode {
+    constructor(condition, trueExpr, falseExpr) {
+        super("TenaryExpression");
+        this.condition = condition; // The condition expression
+        this.trueExpr = trueExpr;   // The true expression
+        this.falseExpr = falseExpr; // The false expression
     }
 }
 
